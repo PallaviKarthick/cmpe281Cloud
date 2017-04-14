@@ -1,24 +1,24 @@
 package api ;
 
-import java.util.Collection ;
 import java.util.concurrent.BlockingQueue ;
-import java.util.concurrent.ConcurrentHashMap ;
 import java.util.concurrent.LinkedBlockingQueue ;
 
 public class StarbucksAPI {
 
     public enum OrderStatus { PLACED, PAID, PREPARING, SERVED, COLLECTED  }
 
-    private static BlockingQueue<String> orderQueue = new LinkedBlockingQueue<String>();
-    private static ConcurrentHashMap<String,Order> orders = new ConcurrentHashMap<String,Order>();
+    public static BlockingQueue<String> orderQueue = new LinkedBlockingQueue<String>();
+    //private static ConcurrentHashMap<String,Order> orders = new ConcurrentHashMap<String,Order>();
+    public static String existing_order_status = null;
+    public static String existing_order_id =null;
 
-    public static void placeOrder(String order_id, Order order) {
+    public static void placeOrder1(String order_id, Order order) {
         try { 
         	System.out.println( "#### class Name ### :" + Thread.currentThread().getStackTrace()[1].getClassName() + " #### Method Name ###: " + Thread.currentThread().getStackTrace()[1].getMethodName() ) ;
 
             StarbucksAPI.orderQueue.put( order_id ) ; 
         } catch (Exception e) {}
-        StarbucksAPI.orders.put( order_id, order ) ;
+        //StarbucksAPI.orders.put( order_id, order ) ;
         System.out.println(order);
         System.out.println( "Order Placed: " + order_id ) ;
     }
@@ -33,19 +33,19 @@ public class StarbucksAPI {
     public static void updateOrder(String key, Order order) {
     	System.out.println( "#### class Name ### :" + Thread.currentThread().getStackTrace()[1].getClassName() + " #### Method Name ###: " + Thread.currentThread().getStackTrace()[1].getMethodName() ) ;
 
-        StarbucksAPI.orders.replace( key, order ) ;
+        //StarbucksAPI.orders.replace( key, order ) ;
     }
 
-    public static Order getOrder(String key) {
+    public static void getOrder1(String key) {
     	System.out.println( "#### class Name ### :" + Thread.currentThread().getStackTrace()[1].getClassName() + " #### Method Name ###: " + Thread.currentThread().getStackTrace()[1].getMethodName() ) ;
 
-        return StarbucksAPI.orders.get( key ) ;
+       //return StarbucksAPI.orders.get( key ) ;
     }
 
     public static void removeOrder(String key) {
     	System.out.println( "#### class Name ### :" + Thread.currentThread().getStackTrace()[1].getClassName() + " #### Method Name ###: " + Thread.currentThread().getStackTrace()[1].getMethodName() ) ;
 
-        StarbucksAPI.orders.remove( key ) ;
+        //StarbucksAPI.orders.remove( key ) ;
         StarbucksAPI.orderQueue.remove( key ) ;
     }
 
@@ -90,10 +90,10 @@ public class StarbucksAPI {
     }
 
 
-    public static Collection<Order> getOrders() {
+    public static void getOrders() {
     	System.out.println( "#### class Name ### :" + Thread.currentThread().getStackTrace()[1].getClassName() + " #### Method Name ###: " + Thread.currentThread().getStackTrace()[1].getMethodName() ) ;
 
-        return orders.values() ;
+        //return orders.values() ;
     }
 
 }

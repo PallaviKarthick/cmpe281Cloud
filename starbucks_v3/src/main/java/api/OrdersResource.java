@@ -16,7 +16,12 @@ public class OrdersResource extends ServerResource {
     	
     	
     	Representation orders = mongoDBJDBC.retrieveOrders();
-    	Representation result = new JacksonRepresentation<Order>(orders, Order.class);
+    	
+    	JacksonRepresentation<Order> resultRep = new JacksonRepresentation<Order>(orders, Order.class);
+		Order orderss = resultRep.getObject();
+		Representation result = new JacksonRepresentation<Order>(orders,  Order.class);
+		
+    	
         return result ;           
     }
 
