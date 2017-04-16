@@ -1,0 +1,41 @@
+function updateOrderStatus(Order_id){
+db.starbucks.update({"order.id":Order_id},{$set:{"order.status":"PREPARING"}});
+sleep(20000);
+db.starbucks.update({"order.id":Order_id},{$set:{"order.status":"SERVED"}});
+sleep(20000);
+db.starbucks.update({"order.id":Order_id},{$set:{"order.status":"COLLECTED"}});
+
+}
+
+
+
+ db.system.js.save({_id:"update_Order_Status",
+                    value : function (Order_id){
+                    db.starbucks.update({"order.id":Order_id},{$set:{"order.status":"PREPARING"}});
+                    sleep(20000);
+                    db.starbucks.update({"order.id":Order_id},{$set:{"order.status":"SERVED"}});
+                    sleep(20000);
+                    db.starbucks.update({"order.id":Order_id},{$set:{"order.status":"COLLECTED"}});
+
+                    }});
+
+
+
+mongo "mongodb://starbuckscluster-shard-00-00-bbpxq.mongodb.net:27017,starbuckscluster-shard-00-01-bbpxq.mongodb.net:27017,starbuckscluster-shard-00-02-bbpxq.mongodb.net:27017/test?replicaSet=StarbucksCluster-shard-0" --authenticationDatabase admin --ssl --username pallavi --password pallavi
+
+
+
+
+db.collection("starbucks").find({}, function(err, docs) {
+    docs.each(function(err, doc) {
+      if(doc) {
+        console.log(doc);
+      }
+      else {
+        res.end();
+      }
+    });
+  });
+
+
+
