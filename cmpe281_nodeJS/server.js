@@ -80,6 +80,8 @@ app.get("/order/:order_id", function(req, res) {
 
 // Create an Orders 
 app.post("/order", function(req, res) {
+   console.log("---input---:"+req.body["location"]);
+   if(req.body["location"]!=null|| req.body["location"]!=undefined){
     req.body.id = (Math.floor(Number.MAX_SAFE_INTEGER * Math.random())).toString();
 	console.log(req.body);
     var full_address = req.protocol + "://" + req.headers.host + req.originalUrl;
@@ -87,6 +89,12 @@ app.post("/order", function(req, res) {
 
 	db.collection("starbucks").insertOne(order);
     res.send(order);
+   }
+   else{
+    res.status(400).json({
+    message: 'Order is empty'
+   });
+   }
 }); 
 
 // Delete an Orders 
@@ -184,6 +192,18 @@ console.log("--payed prder---"+JSON.stringify(order));
             } else {
                 console.log('' + result + ' document(s) updated');
                 res.send(order);
+               order = startOrderProcessing(order,function(err,order){
+                if(err){
+
+                console.log('Error processing order: ' + err);
+                res.status(500).json({
+                message: 'Server Error'
+                });
+                res.send(order);
+                }
+
+                });
+                res.send(order);
             }
         });
     });
@@ -203,8 +223,8 @@ function setOrderStatus(doc , URI, status){
                 doc.message = "Order has been placed." ;
        
                 var map = {};
-                map["order"]= URI+doc.id  ;
-                map["payment"]=URI+doc.id +"/pay";
+                map["order"]= URI+"/"+doc.id  ;
+                map["payment"]=URI+"/"+doc.id +"/pay";
                 doc.links=map;
             console.log("--doc----"+doc);
             break;
@@ -233,5 +253,35 @@ function setOrderStatus(doc , URI, status){
         }
     return doc;
 
+}
+
+function startOrderProcessing(order){
+
+  console.log("---startOrderProcessing-1----"+order);
+      setTimeout(function(){
+          
+          order.status = "PREPARING";
+          console.log("---startOrderProcessing--1.1---"+order.status);
+
+          
+      setTimeout(function(){
+          
+          order.status = "SERVED";
+          console.log("---startOrderProcessing-2--.2--"+order.status);
+     
+      setTimeout(function(){
+          
+          order.status = "COLLECTED";
+          console.log("---startOrderProcessing--3-.1--"+order.status);
+        
+        },5000);
+       
+          
+        },5000);
+                     
+        },5000);
+
+  
+    
 }
 
