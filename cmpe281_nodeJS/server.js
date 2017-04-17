@@ -38,13 +38,21 @@ app.get("/", function(req, res) {
 // GET All Orders
 app.get("/orders", function(req, res) {
   db.collection("starbucks").find({}, function(err, docs) {
+    if(err){
+        res.status(500).json({
+        message: 'Server Error'
+    });
+    }
+
     docs.each(function(err, doc) {
       if(doc) {
         console.log(doc);
         res.send(doc);
       }
       else {
-        res.end();
+        res.status(404).json({
+        message: 'Orders not found'
+    });
       }
     });
   });
@@ -54,7 +62,18 @@ app.get("/orders", function(req, res) {
 app.get("/order/:order_id", function(req, res) {
   db.collection("starbucks").findOne({"id": req.params.order_id}, function(err, docs) {
   console.log(docs);
-res.send(docs);
+  if(err) {
+     res.status(500).json({
+        message: 'Server Error'
+    });
+  }
+  else if(docs==null){
+    res.status(404).json({
+        message: 'Order not found'
+    });
+
+  }
+  res.send(docs);
 
 });
 });
@@ -73,6 +92,12 @@ app.post("/order", function(req, res) {
 // Delete an Orders 
 app.delete("/order/:order_id", function(req, res) {
   db.collection("starbucks").remove({"id": req.params.order_id}, function(err, docs) {
+console.log("deleted order:"+docs);
+  if(err){
+       res.status(500).json({
+        message: 'Server Error'
+    });
+  }
   res.setHeader('Content-Type', 'application/json');
   res.send(JSON.stringify({  message: 'Successfully Cancelled the Order' }));
 
@@ -94,13 +119,18 @@ console.log('Updating order: ' + id);
     console.log(JSON.stringify(order));
     db.collection("starbucks", function(err, collection) {
         if (err){
-       console.log("--err-----" +err);
-
+        console.log("--err-----" +err);
+        res.status(500).json({
+        message: 'Server Error'
+        });
+  
         }
         collection.update({'id':id}, order, {safe:true}, function(err, result) {
             if (err) {
                 console.log('Error updating order: ' + err);
-                res.send({'error':'An error has occurred'});
+                res.status(500).json({
+                message: 'Server Error'
+                });
             } else {
                 console.log('' + result + ' document(s) updated');
                 res.send(order);
@@ -121,7 +151,15 @@ console.log("inside payment post");
   console.log(docs);
   if (err)
   {
-      res.send({'Message':'Order Not Found'});
+    res.status(404).json({
+    message: 'Order Not Found'
+    });
+  }
+  else if (docs==null){
+    res.status(404).json({
+        message: 'Order not found'
+    });
+
   }
 var ord = docs
 var full_address = req.protocol + "://" + req.headers.host + req.originalUrl;
@@ -132,12 +170,17 @@ console.log("--payed prder---"+JSON.stringify(order));
     db.collection("starbucks", function(err, collection) {
         if (err){
        console.log("--err-----" +err);
+           res.status(500).json({
+            message: 'Server Error'
+           });
 
         }
         collection.update({'id':id}, order, {safe:true}, function(err, result) {
             if (err) {
                 console.log('Error updating order: ' + err);
-                res.send({'error':'An error has occurred'});
+                res.status(500).json({
+                message: 'Server Error'
+                });
             } else {
                 console.log('' + result + ' document(s) updated');
                 res.send(order);
@@ -153,7 +196,7 @@ console.log("--payed prder---"+JSON.stringify(order));
 
 // function to update status
 function setOrderStatus(doc , URI, status){
-    console.log("--doc----"+doc.status);
+    console.log("--doc---status-"+status);
      switch ( status ) {
             case "PLACED":
                 doc.status = "PLACED" ;
