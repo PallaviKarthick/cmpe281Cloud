@@ -43,18 +43,19 @@ app.get("/orders", function(req, res) {
             });
         }
         var orderArray = new Array();
-
+        var temp = false;
         docs.each(function(err, doc) {
             if (doc) {
                 orderArray.push(doc);
                 //res.send(doc);
-            } else if (!doc) {
+                temp = true;
+            } else if (!doc && temp) {
                 console.log(orderArray);
                 res.send(orderArray);
 
             } else {
                 res.status(400).json({
-                    message: 'Order is empty'
+                    message: 'Orders not found'
                 });
             }
         });
